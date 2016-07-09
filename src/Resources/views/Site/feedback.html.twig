@@ -1,0 +1,27 @@
+<div class="col-md-12 feedback">
+    <div class="row">
+        <div class="pull-left">
+            {{ feedback.name }} (<a href="mailto:{{feedback.email}}">{{ feedback.email }}</a>)
+        </div>
+        <div class="pull-right">
+            {{ feedback.date|date('Y-m-d H:i:s') }}
+        </div>
+    </div>
+    <div class="row message">
+        {#
+           Через переменную image одается base64 картинка
+           в режиме предварительного просмотра
+        #}
+        {% if image64 is defined and image64 is not null %}
+            <img src="{{image64}}"></src>
+        {% elseif feedback.image %}
+            <img src="/upload/{{ feedback.image }}"></src>
+        {% endif %}
+        {{ feedback.message }}
+    </div>
+    {% if feedback.edited %}
+    <div class="row edited">
+        <p class="bg-warning">Отзыв изменен администратором</p>
+    </div>
+    {% endif %}
+</div>

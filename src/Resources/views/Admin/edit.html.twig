@@ -1,0 +1,23 @@
+{% extends "layout.html.twig" %}
+
+{% block content %}
+<a href="{{ route('/admin/logout') }}">Выход из админки</a>
+
+    {{ form_start(form) }}
+        {{ form_errors(form) }}
+
+        <div class="form-group">
+            {{ form_label(form.message) }}
+            {{ form_errors(form.message) }}
+            {{ form_widget(form.message, {'attr': {'class': 'form-control'}} ) }}
+        </div>
+
+        <div class="checkbox">
+            <label>
+                {{ form_widget(form.published) }} Опубликовано
+            </label>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Изменить</button>
+    {{ form_end(form) }}
+{% endblock %}

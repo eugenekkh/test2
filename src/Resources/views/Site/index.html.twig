@@ -1,0 +1,121 @@
+{% extends "layout.html.twig" %}
+
+{% block css %}
+    {{ parent() }}
+    <link href="/css/feedback.css" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+    <h3>Отзывы</h3>
+    <div class="sort">
+        Сортировка:
+        <a href="{{ route('/site/index', {
+            'sort': 'date',
+            'order': (sort == 'date' and order == 'desc') ? 'asc' : 'desc'
+        }) }}">По дате</a>
+        <a href="{{ route('/site/index', {
+            'sort': 'name',
+            'order': (sort == 'name' and order == 'asc') ? 'desc' : 'asc'
+        }) }}">По имени</a>
+        <a href="{{ route('/site/index', {
+            'sort': 'email',
+            'order': (sort == 'email' and order == 'asc') ? 'desc' : 'asc'
+        }) }}">По email</a>
+    </div>
+    <div class="feedbacks">
+        <div class="row">
+            {% for feedback in feedbacks %}
+                {{ include('Site/feedback.html.twig') }}
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="feedback-form-wrap">
+        {% include 'Site/feedback_form.html.twig' with { 'formAction': route('/site/preview') } %}
+    </div>
+{% endblock %}
+
+{% block js %}
+    {{ parent() }}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.form/3.51/jquery.form.min.js"></script>
+    <script>
+        /**
+         * Реализация определения нажатой кнопки
+         * http://stackoverflow.com/questions/14628750/jquery-detect-which-button-submitted-form
+         */
+        $('#feedback-form button[type=submit]').click(function () {
+            $('button[type=submit]', $(this).parents('form')).removeAttr('clicked');
+            $(this).attr('clicked', 'true');
+        });
+
+        $('body').on('submit', '#feedback-form', function (e) {
+            var form = $(e.target);
+            var clickedSubmitId = $('#feedback-form button[type=submit][clicked=true]').attr('id');
+
+            if (clickedSubmitId == 'feedback-submit-btn') {
+                /**
+                 * По умолчанию при нажатии Enter в любой точке формы происходит событие preview
+                 * только в случае нажатия кнопки отправить action меняется на сохранение
+                 */
+                form.attr('action', '{{ route('/site/index') }}');
+                return true;
+            }
+
+            e.preventDefault();
+
+            form.ajaxSubmit({
+                url: form.attr('action'),
+                dataType: 'json',
+                success: function(data, statusText, xhr, form) {
+                    if (data.status == 200) {
+                        addPreview(data.preview);
+                    } else if (data.status == 400) {
+                        //var formWrap = $('div.feedback-form-wrap');
+                        //formWrap.html(data.form);
+                        applyErrors(data.form);
+                    }
+
+                },
+                error: function(xhr, status, error) {
+                    alert(error);
+                }
+            });
+        });
+
+        /**
+         * Удалить текущее preview и добавить новое
+         */
+        function addPreview(html)
+        {
+            $('.preview-feedback').remove();
+            var html = $(html);
+            html.addClass('preview-feedback');
+            $('div.feedbacks > .row').append(html);
+
+            // убрать все ошибки с формы
+            $('div.feedback-errors').html('');
+        }
+
+        /**
+         * Если просто заменить форму, то заполненное значение поля изображение будет
+         * утрачено. Чтобы это не произошло перезаписываем только содержимое div-ов с ошибками,
+         * сама форма остается как есть
+         *
+         * TODO сделать с этим что-то
+         */
+        function applyErrors(html)
+        {
+            var html = $(html);
+            html.find('div.feedback-errors').each(function(index) {
+                var div = $(this);
+                var classes = div.attr('class').split(' ');
+                var classesStr = '';
+                classes.forEach(function(item, i, arr) {
+                    classesStr += '.' + item;
+                });
+                $(classesStr).html(div.html());
+            });
+        }
+
+    </script>
+{% endblock %}

@@ -1,0 +1,38 @@
+{% extends "layout.html.twig" %}
+
+{% block content %}
+<a href="{{ route('/admin/logout') }}">Выход из админки</a>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Имя</th>
+            <th>Email</th>
+            <th>Текст</th>
+            <th>Изображение</th>
+            <th>Опубликовано</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for feedback in feedbacks %}
+        <tr>
+            <td>{{ feedback.id }}</td>
+            <td>{{ feedback.name }}</td>
+            <td>{{ feedback.email }}</td>
+            <td>{{ feedback.message }}</td>
+            <td>
+                {% if feedback.image %}
+                    <img width="160" src="/upload/{{ feedback.image }}"></img>
+                {% endif %}
+            </td>
+            <td class="{{ feedback.published ? 'success' : 'active' }}">
+                {{ feedback.published ? 'Да' : 'Нет' }}
+            </td>
+            <td><a href="{{ route('/admin/edit', {'id': feedback.id }) }}">Редактировать</a></td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

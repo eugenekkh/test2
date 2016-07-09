@@ -1,0 +1,31 @@
+{{ form_start(form, {'action': formAction, 'attr': {'id': 'feedback-form', 'novalidate': 'novalidate'}}) }}
+    {{ form_errors(form) }}
+
+    <div class="form-group">
+        {{ form_label(form.name) }}
+        <div class="feedback-errors feedback-name-errors">{{ form_errors(form.name) }}</div>
+        {{ form_widget(form.name, {'attr': {'class': 'form-control'}} ) }}
+    </div>
+
+    <div class="form-group">
+        {{ form_label(form.email) }}
+        <div class="feedback-errors feedback-email-errors">{{ form_errors(form.email) }}</div>
+        {{ form_widget(form.email, {'attr': {'class': 'form-control'}} ) }}
+    </div>
+
+    <div class="form-group">
+        {{ form_label(form.message) }}
+        <div class="feedback-errors feedback-message-errors">{{ form_errors(form.message) }}</div>
+        {{ form_widget(form.message, {'attr': {'class': 'form-control'}} ) }}
+    </div>
+
+    <div class="form-group">
+        {{ form_label(form.image) }}
+        <div class="feedback-errors feedback-image-errors">{{ form_errors(form.image) }}</div>
+        {{ form_widget(form.image, {'attr': {'class': 'form-control'}} ) }}
+    </div>
+
+    <button type="submit" id="feedback-preview-btn" class="btn btn-primary">Предпросмотр</button>
+    <button type="submit" id="feedback-submit-btn" class="btn btn-default">Отправить</button>
+
+{{ form_end(form) }}
